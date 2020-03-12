@@ -29,7 +29,7 @@ public class HttpUtilsTest {
 
     {
         headers.add(new BasicHeader("cookie",
-                "_ga=GA1.2.1045647750.1571648344; 7ce0ff06556c05363a176b03dfdd5680=1160; a608ea7c4cbd1919ce039822a2e5d753=01160; cd1f6c4c522c03e21ad83ee2d7b0c515=%E8%8B%8F%E6%89%BF%E7%A5%A5%EF%BC%88%E8%8E%AB%E9%82%AA%EF%BC%89; e255ad9b8262a02d28bca48235a96357=1346; HERA_Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzc29JZCI6IjIiLCJzc29fbmFtZSI6InN1Y3giLCJhdWQiOiIyZGZpcmUiLCJpc3MiOiJoZXJhIiwiZXhwIjoxNTg0MDA1OTI2LCJ1c2VySWQiOiIxIiwiaWF0IjoxNTgzNzQ2NzI2LCJ1c2VybmFtZSI6ImhlcmEifQ.jILyJ9EUcJ4CoD8_pOQNKIfTWCSCG0g0Rrf3amtejWU; SSO_USER_TOKEN=p_586e8567ee97e69661a1238c0efe6d56"
+                "_ga=GA1.2.1045647750.1571648344; 7ce0ff06556c05363a176b03dfdd5680=1160; a608ea7c4cbd1919ce039822a2e5d753=01160; cd1f6c4c522c03e21ad83ee2d7b0c515=%E8%8B%8F%E6%89%BF%E7%A5%A5%EF%BC%88%E8%8E%AB%E9%82%AA%EF%BC%89; e255ad9b8262a02d28bca48235a96357=1346; SSO_USER_TOKEN=p_586e8567ee97e69661a1238c0efe6d56; HERA_Token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzc29JZCI6IjIiLCJzc29fbmFtZSI6InN1Y3giLCJhdWQiOiIyZGZpcmUiLCJpc3MiOiJoZXJhIiwiZXhwIjoxNTg0MjY1Mjk5LCJ1c2VySWQiOiIxIiwiaWF0IjoxNTg0MDA2MDk5LCJ1c2VybmFtZSI6ImhlcmEifQ.nN_q_k-VWTNnyPKq2FVfqsjK_0GefYZDrcN5MJSvcSA"
         ));
     }
 
@@ -103,12 +103,8 @@ public class HttpUtilsTest {
     private String previewCode(String jobVersion) {
         String url = "https://hera-cn.tuya-inc.top:7799/scheduleCenter/previewJob.do?actionId=" + jobVersion;
         String s = HttpUtils.doGet(url, headers);
-
         JSONObject object = JSONObject.parseObject(s);
-
         return object.getString("data");
-
-
     }
 
 

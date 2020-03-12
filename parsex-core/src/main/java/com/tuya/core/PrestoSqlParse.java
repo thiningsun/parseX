@@ -9,10 +9,7 @@ import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
 import scala.Tuple4;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +21,6 @@ import java.util.stream.Collectors;
 public class PrestoSqlParse extends AbstractSqlParse {
 
 
-    private final String columnSplit = ",";
     private HashSet<TableInfo> inputTables;
     private HashSet<TableInfo> outputTables;
     private HashSet<TableInfo> tempTables;
@@ -139,7 +135,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
                             throw new SqlParseException("unknow column type:" + item.getClass().getName());
                         }
                     }
-                    columns = (HashSet<String>) columns.stream().flatMap(column -> Arrays.stream(column.split(columnSplit))).collect(Collectors.toSet());
+                    columns = splitColumn(columns, new HashMap<>(0));
                     Table table = (Table) from;
                     TableInfo info = new TableInfo(table.getName().toString(), OperatorType.READ, currentDb, columns);
                     query.getLimit().ifPresent(info::setLimit);
@@ -177,6 +173,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
             throw new SqlParseException("unknow node type:" + node.getClass().getName());
         }
     }
+
 
     private void loopNode(List<? extends Node> children) throws SqlParseException {
         for (Node node : children) {

@@ -12,6 +12,8 @@ import scala.Tuple3;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * desc:
@@ -41,7 +43,6 @@ public class PrestoHttpTest {
         PrestoSqlParse sqlParse = new PrestoSqlParse();
         for (int i = 0; i < size; i++) {
             JSONObject object = array.getJSONObject(i);
-
             String query = object.getString("query");
             System.out.println(query);
             Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = sqlParse.parse(query);
@@ -49,4 +50,18 @@ public class PrestoHttpTest {
         }
     }
 
+    public void test() {
+
+
+        ArrayList<String> test = new ArrayList<>();
+
+
+        List<String> collect = test.stream().map(col -> {
+            return col + "1";
+        }).collect(Collectors.toList());
+
+        for (String s : collect) {
+            System.out.println(s);
+        }
+    }
 }

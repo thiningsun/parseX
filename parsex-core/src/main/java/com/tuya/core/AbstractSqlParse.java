@@ -2,13 +2,13 @@ package com.tuya.core;
 
 import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
-import org.apache.commons.lang3.StringUtils;
+import com.tuya.core.util.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import scala.Tuple3;
 import scala.Tuple4;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * desc:
@@ -18,6 +18,24 @@ import java.util.Iterator;
  */
 public abstract class AbstractSqlParse implements SqlParse {
 
+
+    protected final String columnSplit = ",";
+
+
+    protected HashSet<String> splitColumn(Set<String> columns, HashMap<String, String> tableMap) {
+        return (HashSet<String>) columns.stream()
+                .flatMap(column -> Arrays.stream(column.split(columnSplit)))
+                .collect(Collectors.toSet())
+                .stream()
+                .map(column -> {
+                    if (column.contains(Constants.POINT)) {
+                        Pair<String, String> pair = StringUtils.getPointPair(column);
+                        String aDefault = tableMap.getOrDefault(pair.getLeft(), pair.getLeft());
+                        return aDefault + Constants.POINT + pair.getRight();
+                    }
+                    return column;
+                }).collect(Collectors.toSet());
+    }
 
     /**
      * 替换sql注释
@@ -35,7 +53,7 @@ public abstract class AbstractSqlParse implements SqlParse {
             if (!trimLine.startsWith("--") && !trimLine.startsWith("download")) {
                 //过滤掉行内注释
                 line = line.replaceAll("/\\*.*\\*/", empty);
-                if (StringUtils.isNotBlank(line)) {
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(line)) {
                     newSql.append(line).append(lineBreak);
                 }
             }
@@ -69,7 +87,7 @@ public abstract class AbstractSqlParse implements SqlParse {
             } else {
                 command += oneCmd;
             }
-            if (StringUtils.isBlank(command)) {
+            if (org.apache.commons.lang3.StringUtils.isBlank(command)) {
                 continue;
             }
             newSqlArray.add(command);
@@ -92,7 +110,7 @@ public abstract class AbstractSqlParse implements SqlParse {
             if (sql.charAt(sql.length() - 1) == ';') {
                 sql = sql.substring(0, sql.length() - 1);
             }
-            if (StringUtils.isBlank(sql)) {
+            if (org.apache.commons.lang3.StringUtils.isBlank(sql)) {
                 continue;
             }
             Tuple4<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>, String> subTuple = this.parseInternal(sql, currentDb);

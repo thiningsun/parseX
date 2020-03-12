@@ -1,8 +1,13 @@
 package com.tuya.core.model;
 
+import com.tuya.core.Constants;
 import com.tuya.core.enums.OperatorType;
+import com.tuya.core.util.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * desc:
@@ -24,7 +29,7 @@ public class TableInfo {
 
     private OperatorType type;
 
-    private HashSet<String> columns;
+    private Set<String> columns;
 
     private String limit;
 
@@ -34,13 +39,14 @@ public class TableInfo {
         this.type = type;
         this.columns = new HashSet<>(columns);
         columns.clear();
+        optimizeColumn();
     }
 
     public TableInfo(String dbAndTableName, OperatorType type, String defaultDb, HashSet<String> columns) {
         if (dbAndTableName.contains(".")) {
-            int index = dbAndTableName.indexOf(".");
-            this.dbName = dbAndTableName.substring(0, index);
-            this.name = dbAndTableName.substring(index + 1);
+            Pair<String, String> pair = StringUtils.getPointPair(dbAndTableName);
+            this.name = pair.getRight();
+            this.dbName = pair.getLeft();
         } else {
             this.name = dbAndTableName;
             this.dbName = defaultDb;
@@ -48,6 +54,29 @@ public class TableInfo {
         this.columns = new HashSet<>(columns);
         this.type = type;
         columns.clear();
+        optimizeColumn();
+    }
+
+
+    public Set<String> getColumns() {
+        return columns;
+    }
+
+    private void optimizeColumn() {
+        String dbAndName = this.dbName + Constants.POINT + this.name;
+        this.columns = this.columns.stream().map(column -> {
+            if (column.contains(Constants.POINT)) {
+                Pair<String, String> pair = StringUtils.getLastPointPair(column);
+                if (pair.getLeft().equals(dbAndName)) {
+                    return pair.getRight();
+                }
+            }
+            return column;
+        }).collect(Collectors.toSet());
+    }
+
+    public OperatorType getType() {
+        return type;
     }
 
     public String getName() {
@@ -69,10 +98,7 @@ public class TableInfo {
 
     @Override
     public String toString() {
-
         StringBuilder builder = new StringBuilder();
-
-
         this.columns.forEach(columns -> builder.append(columns).append(" "));
 
         return dbName + "." + name + "[" + type.name() + "]\ncolumn=[ " + builder.toString() + " ]\nlimit=" + limit + "\n";

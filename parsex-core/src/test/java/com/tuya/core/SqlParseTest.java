@@ -20,6 +20,7 @@ public class SqlParseTest {
 
     @Test
     public void sparkSqlParse() throws SqlParseException {
+        System.out.println(sql);
         Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = new SparkSQLParse().parse(sql);
         print(parse);
 
