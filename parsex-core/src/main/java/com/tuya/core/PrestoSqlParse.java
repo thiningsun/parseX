@@ -7,9 +7,12 @@ import com.facebook.presto.sql.tree.*;
 import com.tuya.core.enums.OperatorType;
 import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
-import scala.Tuple4;
+import scala.Tuple3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -24,8 +27,6 @@ public class PrestoSqlParse extends AbstractSqlParse {
     private HashSet<TableInfo> inputTables;
     private HashSet<TableInfo> outputTables;
     private HashSet<TableInfo> tempTables;
-    private HashSet<String> columns;
-    private String currentDb;
 
     /**
      * select 字段表达式中获取字段
@@ -94,7 +95,10 @@ public class PrestoSqlParse extends AbstractSqlParse {
             return getString(logicExp.getLeft(), logicExp.getRight());
         } else if (expression instanceof IsNullPredicate) {
             IsNullPredicate isNullExp = (IsNullPredicate) expression;
-            return isNullExp.getValue().toString();
+            return getColumn(isNullExp.getValue());
+        } else if (expression instanceof IsNotNullPredicate) {
+            IsNotNullPredicate notNull = (IsNotNullPredicate) expression;
+            return getColumn(notNull.getValue());
         }
 
         throw new SqlParseException("无法识别的表达式:" + expression.getClass().getName());
@@ -114,6 +118,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
         return builder.toString();
     }
 
+
     /**
      * node 节点的遍历
      *
@@ -122,53 +127,56 @@ public class PrestoSqlParse extends AbstractSqlParse {
     private void checkNode(Node node) throws SqlParseException {
         if (node instanceof QuerySpecification) {
             QuerySpecification query = (QuerySpecification) node;
-            Relation from = query.getFrom().orElse(null);
-            if (from != null) {
-                if (from instanceof Table) {
-                    List<SelectItem> selectItems = query.getSelect().getSelectItems();
-                    for (SelectItem item : selectItems) {
-                        if (item instanceof SingleColumn) {
-                            columns.add(getColumn(((SingleColumn) item).getExpression()));
-                        } else if (item instanceof AllColumns) {
-                            columns.add(item.toString());
-                        } else {
-                            throw new SqlParseException("unknow column type:" + item.getClass().getName());
-                        }
-                    }
-                    columns = splitColumn(columns, new HashMap<>(0));
-                    Table table = (Table) from;
-                    TableInfo info = new TableInfo(table.getName().toString(), OperatorType.READ, currentDb, columns);
-                    query.getLimit().ifPresent(info::setLimit);
-                    inputTables.add(info);
-                }
-            }
-            loopNode(node.getChildren().stream().filter(child -> !(child instanceof Table)).collect(Collectors.toList()));
-
+            query.getLimit().ifPresent(limit -> limitStack.push(limit));
+            loopNode(query.getChildren());
         } else if (node instanceof TableSubquery) {
             loopNode(node.getChildren());
         } else if (node instanceof AliasedRelation) {
             AliasedRelation alias = (AliasedRelation) node;
             String value = alias.getAlias().getValue();
-            tempTables.add(new TableInfo(value, OperatorType.READ, currentDb, columns));
+            if (alias.getChildren().size() == 1 && alias.getChildren().get(0) instanceof Table) {
+                Table table = (Table) alias.getChildren().get(0);
+                tableAliaMap.put(value, table.getName().toString());
+            } else {
+                tempTables.add(buildTableInfo(value, OperatorType.READ));
+            }
             loopNode(node.getChildren());
-        } else if (node instanceof Query) {
-            loopNode(node.getChildren());
-        } else if (node instanceof Join) {
-            loopNode(node.getChildren());
-        } else if (node instanceof Union) {
+        } else if (node instanceof Query || node instanceof Join
+                || node instanceof Union || node instanceof With
+                || node instanceof LogicalBinaryExpression || node instanceof InPredicate
+                || node instanceof SubqueryExpression) {
             loopNode(node.getChildren());
         } else if (node instanceof LikePredicate || node instanceof NotExpression
-                || node instanceof IfExpression || node instanceof LogicalBinaryExpression
+                || node instanceof IfExpression
                 || node instanceof ComparisonExpression || node instanceof GroupBy
-                || node instanceof OrderBy || node instanceof Select) {
+                || node instanceof OrderBy || node instanceof Identifier
+                || node instanceof InListExpression || node instanceof DereferenceExpression
+                || node instanceof IsNotNullPredicate) {
             print(node.getClass().getName());
-        } else if (node instanceof With) {
-            With withNode = (With) node;
-            loopNode(withNode.getChildren());
+
         } else if (node instanceof WithQuery) {
             WithQuery withQuery = (WithQuery) node;
-            tempTables.add(new TableInfo(withQuery.getName().getValue(), OperatorType.READ, currentDb, columns));
+            tempTables.add(buildTableInfo(withQuery.getName().getValue(), OperatorType.READ));
             loopNode(withQuery.getChildren());
+        } else if (node instanceof Table) {
+            Table table = (Table) node;
+            inputTables.add(buildTableInfo(table.getName().toString(), OperatorType.READ));
+            loopNode(table.getChildren());
+        } else if (node instanceof Select) {
+            Select select = (Select) node;
+            List<SelectItem> selectItems = select.getSelectItems();
+            HashSet<String> columns = new HashSet<>();
+            for (SelectItem item : selectItems) {
+                if (item instanceof SingleColumn) {
+                    columns.add(getColumn(((SingleColumn) item).getExpression()));
+                } else if (item instanceof AllColumns) {
+                    columns.add(item.toString());
+                } else {
+                    throw new SqlParseException("unknow column type:" + item.getClass().getName());
+                }
+            }
+            columnsStack.push(columns);
+
         } else {
             throw new SqlParseException("unknow node type:" + node.getClass().getName());
         }
@@ -199,7 +207,17 @@ public class PrestoSqlParse extends AbstractSqlParse {
             this.currentDb = use.getSchema().getValue();
         } else if (statement instanceof ShowColumns) {
             ShowColumns show = (ShowColumns) statement;
-            inputTables.add(new TableInfo(show.getTable().toString(), OperatorType.READ, currentDb, columns));
+            String allName = show.getTable().toString().replace("hive.", "");
+            inputTables.add(buildTableInfo(allName, OperatorType.READ));
+        } else if (statement instanceof ShowTables) {
+            ShowTables show = (ShowTables) statement;
+            QualifiedName qualifiedName = show.getSchema().orElseThrow(() -> new SqlParseException("unkonw table name or db name" + statement.toString()));
+            String allName = qualifiedName.toString().replace("hive.", "");
+            if (allName.contains(Constants.POINT)) {
+                allName += Constants.POINT + "*";
+            }
+            inputTables.add(buildTableInfo(allName, OperatorType.READ));
+
         } else {
             throw new SqlParseException("unSupport statement:" + statement.getClass().getName());
         }
@@ -207,17 +225,15 @@ public class PrestoSqlParse extends AbstractSqlParse {
 
 
     @Override
-    protected Tuple4<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>, String> parseInternal(String sqlText, String currentDb) throws SqlParseException {
-        this.currentDb = currentDb;
+    protected Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parseInternal(String sqlText) throws SqlParseException {
         this.inputTables = new HashSet<>();
         this.outputTables = new HashSet<>();
         this.tempTables = new HashSet<>();
-        this.columns = new HashSet<>();
         try {
             check(new SqlParser().createStatement(sqlText, new ParsingOptions(ParsingOptions.DecimalLiteralTreatment.AS_DECIMAL)));
         } catch (ParsingException e) {
             throw new SqlParseException("parse sql exception:" + e.getMessage());
         }
-        return new Tuple4<>(inputTables, outputTables, tempTables, this.currentDb);
+        return new Tuple3<>(inputTables, outputTables, tempTables);
     }
 }

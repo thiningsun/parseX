@@ -31,7 +31,6 @@ public class SqlParseTest {
         Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = new HiveSQLParse().parse(sql);
         print(parse);
 
-
     }
 
     @Test

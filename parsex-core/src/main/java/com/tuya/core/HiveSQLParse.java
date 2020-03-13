@@ -5,6 +5,7 @@ import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
 import org.apache.hadoop.hive.ql.lib.*;
 import org.apache.hadoop.hive.ql.parse.*;
+import scala.Tuple3;
 import scala.Tuple4;
 
 import java.util.*;
@@ -32,10 +33,6 @@ public class HiveSQLParse extends AbstractSqlParse implements NodeProcessor {
      */
     private HashSet<TableInfo> withTableList;
 
-    /**
-     * 临时Db
-     */
-    private String currentDb;
 
     @Override
     public Object process(Node nd, Stack stack, NodeProcessorCtx procCtx, Object... nodeOutputs) {
@@ -105,7 +102,7 @@ public class HiveSQLParse extends AbstractSqlParse implements NodeProcessor {
     }
 
     @Override
-    protected Tuple4<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>, String> parseInternal(String sqlText, String currentDb) throws SqlParseException {
+    protected Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parseInternal(String sqlText) throws SqlParseException {
         ParseDriver pd = new ParseDriver();
         ASTNode tree;
         try {
@@ -119,7 +116,6 @@ public class HiveSQLParse extends AbstractSqlParse implements NodeProcessor {
         inputTableList = new HashSet<>();
         outputTableList = new HashSet<>();
         withTableList = new HashSet<>();
-        this.currentDb = currentDb;
         Map<Rule, NodeProcessor> rules = new LinkedHashMap<>();
 
         GraphWalker ogw = new DefaultGraphWalker(new DefaultRuleDispatcher(this, rules, null));
@@ -131,6 +127,6 @@ public class HiveSQLParse extends AbstractSqlParse implements NodeProcessor {
         } catch (SemanticException e) {
             throw new RuntimeException(e);
         }
-        return new Tuple4<>(inputTableList, outputTableList, withTableList, this.currentDb);
+        return new Tuple3<>(inputTableList, outputTableList, withTableList);
     }
 }

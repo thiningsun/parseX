@@ -1,5 +1,6 @@
 package com.tuya.core;
 
+import com.tuya.core.enums.OperatorType;
 import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
 import com.tuya.core.util.StringUtils;
@@ -20,9 +21,14 @@ public abstract class AbstractSqlParse implements SqlParse {
 
 
     protected final String columnSplit = ",";
+    protected Map<String, String> tableAliaMap;
+    protected Stack<HashSet<String>> columnsStack;
+    protected Stack<String> limitStack;
+
+    protected String currentDb;
 
 
-    protected HashSet<String> splitColumn(Set<String> columns, HashMap<String, String> tableMap) {
+    protected HashSet<String> splitColumn(Set<String> columns, Map<String, String> tableMap) {
         return (HashSet<String>) columns.stream()
                 .flatMap(column -> Arrays.stream(column.split(columnSplit)))
                 .collect(Collectors.toSet())
@@ -35,6 +41,35 @@ public abstract class AbstractSqlParse implements SqlParse {
                     }
                     return column;
                 }).collect(Collectors.toSet());
+    }
+
+
+    protected HashSet<String> getColumnsTop() {
+        if (columnsStack.isEmpty()) {
+            return new HashSet<>(0);
+        }
+        return columnsStack.pop();
+    }
+
+
+    protected String getLimitTop() {
+        if (limitStack.isEmpty()) {
+            return null;
+        }
+        return limitStack.pop();
+    }
+
+
+    protected TableInfo buildTableInfo(String name, String db, OperatorType type) {
+        TableInfo info = new TableInfo(name, db, type, splitColumn(getColumnsTop(), tableAliaMap));
+        info.setLimit(getLimitTop());
+        return info;
+    }
+
+    protected TableInfo buildTableInfo(String dbAndTable, OperatorType type) {
+        TableInfo info = new TableInfo(dbAndTable, type, currentDb, splitColumn(getColumnsTop(), tableAliaMap));
+        info.setLimit(getLimitTop());
+        return info;
     }
 
     /**
@@ -105,7 +140,10 @@ public abstract class AbstractSqlParse implements SqlParse {
         HashSet<TableInfo> outputTables = new HashSet<>();
         HashSet<TableInfo> tempTables = new HashSet<>();
 
-        String currentDb = "default";
+        columnsStack = new Stack<>();
+        tableAliaMap = new HashMap<>();
+        limitStack = new Stack<>();
+        currentDb = "default";
         for (String sql : sqlArray) {
             if (sql.charAt(sql.length() - 1) == ';') {
                 sql = sql.substring(0, sql.length() - 1);
@@ -113,11 +151,12 @@ public abstract class AbstractSqlParse implements SqlParse {
             if (org.apache.commons.lang3.StringUtils.isBlank(sql)) {
                 continue;
             }
-            Tuple4<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>, String> subTuple = this.parseInternal(sql, currentDb);
+            columnsStack.clear();
+            limitStack.clear();
+            Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> subTuple = this.parseInternal(sql);
             inputTables.addAll(subTuple._1());
             outputTables.addAll(subTuple._2());
             tempTables.addAll(subTuple._3());
-            currentDb = subTuple._4();
         }
 
         tempTables.forEach(table -> {
@@ -138,11 +177,10 @@ public abstract class AbstractSqlParse implements SqlParse {
      * 抽象解析
      *
      * @param sqlText   sql
-     * @param currentDb 当前db
      * @return tuple4
      * @throws SqlParseException
      */
-    protected abstract Tuple4<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>, String> parseInternal(String sqlText, String currentDb) throws SqlParseException;
+    protected abstract Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parseInternal(String sqlText) throws SqlParseException;
 
     protected void print(String plan) {
         System.out.println(("************ignore plan******\n" + plan));
