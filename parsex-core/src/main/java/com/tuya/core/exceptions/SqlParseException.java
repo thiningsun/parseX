@@ -15,5 +15,7 @@ public class SqlParseException extends Exception {
     public SqlParseException(String e) {
         super(e);
     }
-
+    public SqlParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

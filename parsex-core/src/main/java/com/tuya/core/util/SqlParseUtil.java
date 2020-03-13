@@ -70,7 +70,9 @@ public class SqlParseUtil {
     }
 
     public static void print(Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> tuple3) {
-
+        if (tuple3 == null) {
+            return;
+        }
         System.out.println("输入表有:");
         for (TableInfo table : tuple3._1()) {
             System.out.print(table);

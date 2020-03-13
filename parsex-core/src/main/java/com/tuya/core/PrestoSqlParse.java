@@ -62,7 +62,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
         } else if (expression instanceof ComparisonExpression) {
             ComparisonExpression compare = (ComparisonExpression) expression;
             return getString(compare.getLeft(), compare.getRight());
-        } else if (expression instanceof Literal) {
+        } else if (expression instanceof Literal || expression instanceof ArithmeticUnaryExpression) {
             return "";
         } else if (expression instanceof Cast) {
             Cast cast = (Cast) expression;
@@ -99,8 +99,10 @@ public class PrestoSqlParse extends AbstractSqlParse {
         } else if (expression instanceof IsNotNullPredicate) {
             IsNotNullPredicate notNull = (IsNotNullPredicate) expression;
             return getColumn(notNull.getValue());
+        } else if (expression instanceof CoalesceExpression) {
+            CoalesceExpression coalesce = (CoalesceExpression) expression;
+            return getString(coalesce.getOperands());
         }
-
         throw new SqlParseException("无法识别的表达式:" + expression.getClass().getName());
         //   return expression.toString();
     }
@@ -151,7 +153,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
                 || node instanceof ComparisonExpression || node instanceof GroupBy
                 || node instanceof OrderBy || node instanceof Identifier
                 || node instanceof InListExpression || node instanceof DereferenceExpression
-                || node instanceof IsNotNullPredicate) {
+                || node instanceof IsNotNullPredicate || node instanceof IsNullPredicate) {
             print(node.getClass().getName());
 
         } else if (node instanceof WithQuery) {
@@ -219,7 +221,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
             inputTables.add(buildTableInfo(allName, OperatorType.READ));
 
         } else {
-            throw new SqlParseException("unSupport statement:" + statement.getClass().getName());
+            throw new SqlParseException("sorry,only support read statement,unSupport statement:" + statement.getClass().getName());
         }
     }
 
@@ -232,7 +234,7 @@ public class PrestoSqlParse extends AbstractSqlParse {
         try {
             check(new SqlParser().createStatement(sqlText, new ParsingOptions(ParsingOptions.DecimalLiteralTreatment.AS_DECIMAL)));
         } catch (ParsingException e) {
-            throw new SqlParseException("parse sql exception:" + e.getMessage());
+            throw new SqlParseException("parse sql exception:" + e.getMessage(), e);
         }
         return new Tuple3<>(inputTables, outputTables, tempTables);
     }

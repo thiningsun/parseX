@@ -33,6 +33,8 @@ public class TableInfo {
 
     private String limit;
 
+    private boolean selectAll;
+
     public TableInfo(String name, String dbName, OperatorType type, HashSet<String> columns) {
         this.name = name;
         this.dbName = dbName;
@@ -43,7 +45,7 @@ public class TableInfo {
     }
 
     public TableInfo(String dbAndTableName, OperatorType type, String defaultDb, HashSet<String> columns) {
-        if (dbAndTableName.contains(".")) {
+        if (dbAndTableName.contains(Constants.POINT)) {
             Pair<String, String> pair = StringUtils.getPointPair(dbAndTableName);
             this.name = pair.getRight();
             this.dbName = pair.getLeft();
@@ -65,6 +67,9 @@ public class TableInfo {
     private void optimizeColumn() {
         String dbAndName = this.dbName + Constants.POINT + this.name;
         this.columns = this.columns.stream().map(column -> {
+            if (!selectAll && column.endsWith("*")) {
+                selectAll = true;
+            }
             if (column.contains(Constants.POINT)) {
                 Pair<String, String> pair = StringUtils.getLastPointPair(column);
                 if (pair.getLeft().equals(dbAndName)) {
@@ -74,6 +79,7 @@ public class TableInfo {
             return column;
         }).collect(Collectors.toSet());
     }
+
 
     public OperatorType getType() {
         return type;
@@ -96,12 +102,17 @@ public class TableInfo {
         this.limit = limit;
     }
 
+
+    public boolean isSelectAll() {
+        return selectAll;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         this.columns.forEach(columns -> builder.append(columns).append(" "));
 
-        return dbName + "." + name + "[" + type.name() + "]\ncolumn=[ " + builder.toString() + " ]\nlimit=" + limit + "\n";
+        return dbName + Constants.POINT + name + "[" + type.name() + "]\ncolumn=[ " + builder.toString() + " ]\nlimit=" + limit + "\n";
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.tuya.core.model.TableInfo
 import org.apache.spark.sql.catalyst.TableIdentifier
 import org.apache.spark.sql.catalyst.analysis.{MultiAlias, UnresolvedAlias, UnresolvedAttribute, UnresolvedFunction, UnresolvedRelation, UnresolvedStar}
 import org.apache.spark.sql.catalyst.catalog.UnresolvedCatalogRelation
-import org.apache.spark.sql.catalyst.expressions.{Alias, CaseWhen, Cast, Divide, EqualTo, Expression, In, Literal}
+import org.apache.spark.sql.catalyst.expressions.{Alias, CaseWhen, Cast, Divide, EqualTo, Expression, In, Literal, WindowExpression}
 import org.apache.spark.sql.catalyst.plans.logical._
 import org.apache.spark.sql.execution.SparkSqlParser
 import org.apache.spark.sql.execution.command._
@@ -29,7 +29,7 @@ class SparkSQLParse extends AbstractSqlParse {
   }
 
 
-  def getColumnAuto(exps: Expression*): String = {
+ /* def getColumnAuto(exps: Expression*): String = {
     getColumn(exps)
   }
 
@@ -68,11 +68,12 @@ class SparkSQLParse extends AbstractSqlParse {
         return unresolvedStar.toString()
       case multiAlias: MultiAlias =>
         return resolveExp(multiAlias.child)
+
       case _ =>
         throw new SqlParseException("无法识别的exp:" + exp.getClass.getName)
     }
     column
-  }
+  }*/
 
 
   private[this] def resolveLogic(plan: LogicalPlan, inputTables: JSet[TableInfo], outputTables: JSet[TableInfo], tmpTables: JSet[TableInfo]): Unit = {
@@ -80,12 +81,12 @@ class SparkSQLParse extends AbstractSqlParse {
 
       case plan: Project =>
         val project: Project = plan.asInstanceOf[Project]
-        val columnsSet = new JSet[String]()
+/*        val columnsSet = new JSet[String]()
         project.projectList.foreach(exp => {
           columnsSet.add(resolveExp(exp))
         })
 
-        columnsStack.push(columnsSet)
+        columnsStack.push(columnsSet)*/
         resolveLogic(project.child, inputTables, outputTables, tmpTables)
       case plan: Union =>
         val project: Union = plan.asInstanceOf[Union]
@@ -99,11 +100,11 @@ class SparkSQLParse extends AbstractSqlParse {
 
       case plan: Aggregate =>
         val project: Aggregate = plan.asInstanceOf[Aggregate]
-        val columnsSet = new JSet[String]()
+/*        val columnsSet = new JSet[String]()
         project.aggregateExpressions.foreach(exp => {
           columnsSet.add(resolveExp(exp))
         })
-        columnsStack.push(columnsSet)
+        columnsStack.push(columnsSet)*/
         resolveLogic(project.child, inputTables, outputTables, tmpTables)
 
       case plan: Filter =>

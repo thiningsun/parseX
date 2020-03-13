@@ -2,6 +2,7 @@ package com.tuya.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.presto.sql.parser.ParsingException;
 import com.tuya.core.PrestoSqlParse;
 import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
@@ -45,7 +46,16 @@ public class PrestoHttpTest {
             JSONObject object = array.getJSONObject(i);
             String query = object.getString("query");
             System.out.println(query);
-            Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = sqlParse.parse(query);
+            Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = null;
+            try {
+                parse = sqlParse.parse(query);
+            } catch (SqlParseException e) {
+                if (e.getCause() instanceof ParsingException) {
+                    System.out.println("sql解析异常:" + e.getMessage());
+                } else {
+                    throw new SqlParseException(e);
+                }
+            }
             SqlParseUtil.print(parse);
         }
     }
