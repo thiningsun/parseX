@@ -159,6 +159,19 @@
 
     </dependencyManagement>
 
+    <distributionManagement>
+        <repository>
+            <id>Releases</id>
+            <name>Nexus Release Repository</name>
+            <url>https://maven.tuya-inc.top/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>Snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>https://maven.tuya-inc.top/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
