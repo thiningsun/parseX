@@ -5,8 +5,8 @@ import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
 import com.tuya.core.util.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import scala.Tuple3;
-import scala.Tuple4;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
  * @create 2020/02/29
  */
 public abstract class AbstractSqlParse implements SqlParse {
+
+
+    private static Logger log = Logger.getLogger(AbstractSqlParse.class);
 
 
     protected final String columnSplit = ",";
@@ -183,6 +186,6 @@ public abstract class AbstractSqlParse implements SqlParse {
     protected abstract Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parseInternal(String sqlText) throws SqlParseException;
 
     protected void print(String plan) {
-        System.out.println(("************ignore plan******\n" + plan));
+        log.info("************ignore plan******\n" + plan);
     }
 }

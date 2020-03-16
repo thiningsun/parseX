@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>parsex</artifactId>
-        <groupId>com.tuya</groupId>
+        <groupId>com.tuya.bigdata</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -68,7 +68,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.tuya</groupId>
+            <groupId>com.tuya.bigdata</groupId>
             <artifactId>parsex-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

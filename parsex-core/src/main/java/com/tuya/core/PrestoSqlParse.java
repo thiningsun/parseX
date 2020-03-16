@@ -7,6 +7,7 @@ import com.facebook.presto.sql.tree.*;
 import com.tuya.core.enums.OperatorType;
 import com.tuya.core.exceptions.SqlParseException;
 import com.tuya.core.model.TableInfo;
+import org.apache.log4j.Logger;
 import scala.Tuple3;
 
 import java.util.ArrayList;
@@ -16,13 +17,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * desc:
+ * 目前presto 仅仅是用来查询，目前还没解析输入表
+ * desc: 解析presto sql的输入表、字段
  *
  * @author scx
  * @create 2020/03/09
  */
+
 public class PrestoSqlParse extends AbstractSqlParse {
 
+    private static Logger log = Logger.getLogger(PrestoSqlParse.class);
 
     private HashSet<TableInfo> inputTables;
     private HashSet<TableInfo> outputTables;
@@ -148,12 +152,16 @@ public class PrestoSqlParse extends AbstractSqlParse {
                 || node instanceof LogicalBinaryExpression || node instanceof InPredicate
                 || node instanceof SubqueryExpression) {
             loopNode(node.getChildren());
-        } else if (node instanceof LikePredicate || node instanceof NotExpression
+
+        }
+        //基本都是where条件，过滤掉，如果需要，可以调用getColumn解析字段
+        else if (node instanceof LikePredicate || node instanceof NotExpression
                 || node instanceof IfExpression
                 || node instanceof ComparisonExpression || node instanceof GroupBy
                 || node instanceof OrderBy || node instanceof Identifier
                 || node instanceof InListExpression || node instanceof DereferenceExpression
-                || node instanceof IsNotNullPredicate || node instanceof IsNullPredicate) {
+                || node instanceof IsNotNullPredicate || node instanceof IsNullPredicate
+                || node instanceof FunctionCall) {
             print(node.getClass().getName());
 
         } else if (node instanceof WithQuery) {
