@@ -31,6 +31,18 @@ public class SqlParseUtil {
     private static Map<SqlEnum, SqlParse> sqlParseMap = new ConcurrentHashMap<>(3);
 
 
+    public static Result parsePrestoSql(String sqlText) throws SqlParseException {
+        return parse(SqlEnum.PRESTO, sqlText);
+    }
+
+    public static Result parseHiveSql(String sqlText) throws SqlParseException {
+        return parse(SqlEnum.HIVE, sqlText);
+    }
+
+    public static Result parseSparkSql(String sqlText) throws SqlParseException {
+        return parse(SqlEnum.SPARK, sqlText);
+    }
+
     /**
      * 解析sql入口
      *
@@ -39,7 +51,7 @@ public class SqlParseUtil {
      * @return Result
      * @throws SqlParseException 解析异常
      */
-    public static Result parse(SqlEnum sqlEnum, String sqlText) throws SqlParseException {
+    private static Result parse(SqlEnum sqlEnum, String sqlText) throws SqlParseException {
         Result result;
         switch (sqlEnum) {
             case SPARK:
