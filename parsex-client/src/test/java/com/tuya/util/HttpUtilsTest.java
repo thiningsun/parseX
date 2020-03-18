@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tuya.core.HiveSQLParse;
 import com.tuya.core.SparkSQLParse;
 import com.tuya.core.exceptions.SqlParseException;
+import com.tuya.core.model.Result;
 import com.tuya.core.model.TableInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.message.BasicHeader;
@@ -51,7 +52,7 @@ public class HttpUtilsTest {
                 long start = System.currentTimeMillis();
 
                 SparkSQLParse sparkSQLParse = new SparkSQLParse();
-                Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = sparkSQLParse.parse(sql);
+                Result parse = sparkSQLParse.parse(sql);
                 long cost = System.currentTimeMillis() - start;
                 System.out.println(parse + "耗时:" + cost + "ms");
                 if (cost > maxCost) {
@@ -80,7 +81,7 @@ public class HttpUtilsTest {
                 String sql = previewCode(jobVersion);
                 long start = System.currentTimeMillis();
                 HiveSQLParse hiveSQLParse = new HiveSQLParse();
-                Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse = hiveSQLParse.parse(sql);
+                Result parse = hiveSQLParse.parse(sql);
                 long cost = System.currentTimeMillis() - start;
                 System.out.println(parse + "耗时:" + cost + "ms");
                 if (cost > maxCost) {

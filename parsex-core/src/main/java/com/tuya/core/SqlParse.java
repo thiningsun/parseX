@@ -1,6 +1,7 @@
 package com.tuya.core;
 
 import com.tuya.core.exceptions.SqlParseException;
+import com.tuya.core.model.Result;
 import com.tuya.core.model.TableInfo;
 import scala.Tuple3;
 
@@ -19,8 +20,8 @@ public interface SqlParse {
      * 血缘解析入口
      *
      * @param sqlText sql
-     * @return Tuple3<set1, set2, set3> set1:输入表，set2:输出表，set3:临时表
+     * @return Result 结果
      */
-    Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse(String sqlText) throws SqlParseException;
+    Result parse(String sqlText) throws SqlParseException;
 
 }

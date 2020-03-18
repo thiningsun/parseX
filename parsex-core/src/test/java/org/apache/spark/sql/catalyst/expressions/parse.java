@@ -3,20 +3,19 @@ package org.apache.spark.sql.catalyst.expressions;
 import com.tuya.core.SparkSQLParse;
 import com.tuya.core.SqlParse;
 import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.TableInfo;
+import com.tuya.core.model.Result;
+import com.tuya.core.util.SqlParseUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import scala.Tuple3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * desc:
@@ -99,9 +98,9 @@ public class parse {
 
         SqlParse sqlParse = new SparkSQLParse();
 
-        Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> tuple3 = sqlParse.parse(sql);
+        Result tuple3 = sqlParse.parse(sql);
 
-        print(tuple3);
+        SqlParseUtil.print(tuple3);
 
     }
 
@@ -166,26 +165,6 @@ public class parse {
     }
 
 
-    private void print(Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> tuple3) {
-
-        System.out.println("输入表有:");
-        for (TableInfo table : tuple3._1()) {
-            System.out.print(table);
-        }
-
-        System.out.println("输出表有:");
-
-        for (TableInfo table : tuple3._2()) {
-            System.out.print(table);
-        }
-
-        System.out.println("临时表:");
-
-        for (TableInfo table : tuple3._3()) {
-            System.out.print(table);
-        }
-    }
-
     @Test
     public void split() {
         String sql = "abc; abcd;\n absc;\tabcde ';';   abcde\';\";";
@@ -234,7 +213,6 @@ public class parse {
 
     @Test
     public void prestoTest() {
-
 
 
     }

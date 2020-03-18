@@ -112,7 +112,7 @@ public class TableInfo {
         StringBuilder builder = new StringBuilder();
         this.columns.forEach(columns -> builder.append(columns).append(" "));
 
-        return dbName + Constants.POINT + name + "[" + type.name() + "]\ncolumn=[ " + builder.toString() + " ]\nlimit=" + limit + "\n";
+        return dbName + Constants.POINT + name + "[" + type.name() + "] column=[ " + builder.toString() + " ] limit=" + limit + "\n";
     }
 
     @Override

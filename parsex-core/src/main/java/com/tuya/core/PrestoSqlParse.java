@@ -147,12 +147,14 @@ public class PrestoSqlParse extends AbstractSqlParse {
                 tempTables.add(buildTableInfo(value, OperatorType.READ));
             }
             loopNode(node.getChildren());
-        } else if (node instanceof Query || node instanceof Join
+        } else if (node instanceof Query || node instanceof SubqueryExpression
                 || node instanceof Union || node instanceof With
-                || node instanceof LogicalBinaryExpression || node instanceof InPredicate
-                || node instanceof SubqueryExpression) {
+                || node instanceof LogicalBinaryExpression || node instanceof InPredicate) {
             loopNode(node.getChildren());
 
+        } else if (node instanceof Join) {
+            hasJoin = true;
+            loopNode(node.getChildren());
         }
         //基本都是where条件，过滤掉，如果需要，可以调用getColumn解析字段
         else if (node instanceof LikePredicate || node instanceof NotExpression

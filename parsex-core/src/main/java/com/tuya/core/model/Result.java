@@ -24,11 +24,23 @@ public class Result {
      */
     private Set<TableInfo> tempSets;
 
+    /**
+     * 是否包含join操作
+     */
+    private boolean join;
+
+
 
     public Result(Set<TableInfo> inputSets, Set<TableInfo> outputSets, Set<TableInfo> tempSets) {
+        this(inputSets, outputSets, tempSets, false);
+    }
+
+
+    public Result(Set<TableInfo> inputSets, Set<TableInfo> outputSets, Set<TableInfo> tempSets, boolean join) {
         this.inputSets = inputSets;
         this.outputSets = outputSets;
         this.tempSets = tempSets;
+        this.join = join;
     }
 
 
@@ -43,6 +55,11 @@ public class Result {
         tempSets.forEach(input -> tempStr.append(input.toString()).append(" "));
 
         return inputStr.append(outputStr).append(tempStr).toString();
+    }
+
+
+    public boolean isJoin() {
+        return join;
     }
 
     public Set<TableInfo> getTempSets() {

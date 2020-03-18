@@ -2,6 +2,7 @@ package com.tuya.core;
 
 import com.tuya.core.enums.OperatorType;
 import com.tuya.core.exceptions.SqlParseException;
+import com.tuya.core.model.Result;
 import com.tuya.core.model.TableInfo;
 import com.tuya.core.util.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,6 +28,8 @@ public abstract class AbstractSqlParse implements SqlParse {
     protected Map<String, String> tableAliaMap;
     protected Stack<HashSet<String>> columnsStack;
     protected Stack<String> limitStack;
+
+    protected boolean hasJoin;
 
     protected String currentDb;
 
@@ -136,7 +139,7 @@ public abstract class AbstractSqlParse implements SqlParse {
 
 
     @Override
-    public Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> parse(String sqlText) throws SqlParseException {
+    public Result parse(String sqlText) throws SqlParseException {
 
         ArrayList<String> sqlArray = this.splitSql(this.replaceNotes(sqlText));
         HashSet<TableInfo> inputTables = new HashSet<>();
@@ -147,6 +150,7 @@ public abstract class AbstractSqlParse implements SqlParse {
         tableAliaMap = new HashMap<>();
         limitStack = new Stack<>();
         currentDb = "default";
+        hasJoin = false;
         for (String sql : sqlArray) {
             if (sql.charAt(sql.length() - 1) == ';') {
                 sql = sql.substring(0, sql.length() - 1);
@@ -173,13 +177,13 @@ public abstract class AbstractSqlParse implements SqlParse {
             }
         });
 
-        return new Tuple3<>(inputTables, outputTables, tempTables);
+        return new Result(inputTables, outputTables, tempTables, hasJoin);
     }
 
     /**
      * 抽象解析
      *
-     * @param sqlText   sql
+     * @param sqlText sql
      * @return tuple4
      * @throws SqlParseException
      */

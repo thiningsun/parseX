@@ -14,6 +14,7 @@ import scala.Tuple3;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,37 +40,36 @@ public class SqlParseUtil {
      * @throws SqlParseException 解析异常
      */
     public static Result parse(SqlEnum sqlEnum, String sqlText) throws SqlParseException {
-        Tuple3<HashSet<TableInfo>, HashSet<TableInfo>, HashSet<TableInfo>> tuple3;
+        Result result;
         switch (sqlEnum) {
             case SPARK:
                 try {
-                    tuple3 = getSqlParse(sqlEnum).parse(sqlText);
+                    result = getSqlParse(sqlEnum).parse(sqlText);
                 } catch (Exception e) {
                     LOG.error("spark引擎解析异常,准备使用hive引擎解析:" + sqlText);
                     try {
-                        tuple3 = getSqlParse(SqlEnum.HIVE).parse(sqlText);
+                        result = getSqlParse(SqlEnum.HIVE).parse(sqlText);
                     } catch (Exception e1) {
                         throw new SqlParseException(e);
                     }
                 }
-                return new Result(tuple3._1(), tuple3._2(), tuple3._3());
-
+                return result;
             case HIVE:
                 try {
-                    tuple3 = getSqlParse(sqlEnum).parse(sqlText);
+                    result = getSqlParse(sqlEnum).parse(sqlText);
                 } catch (Exception e) {
                     LOG.error("hive引擎解析异常,准备使用spark引擎解析:" + sqlText);
                     try {
-                        tuple3 = getSqlParse(SqlEnum.SPARK).parse(sqlText);
+                        result = getSqlParse(SqlEnum.SPARK).parse(sqlText);
                     } catch (Exception e1) {
                         throw new SqlParseException(e);
                     }
                 }
-                return new Result(tuple3._1(), tuple3._2(), tuple3._3());
+                return result;
 
             case PRESTO:
-                tuple3 = getSqlParse(sqlEnum).parse(sqlText);
-                return new Result(tuple3._1(), tuple3._2(), tuple3._3());
+                result = getSqlParse(sqlEnum).parse(sqlText);
+                return result;
             default:
                 throw new IllegalArgumentException("not support sqlEnum type :" + sqlEnum.name());
 
@@ -108,23 +108,37 @@ public class SqlParseUtil {
         if (tuple3 == null) {
             return;
         }
-        System.out.println("输入表有:");
-        for (TableInfo table : tuple3._1()) {
-            System.out.print(table);
-        }
-
-        System.out.println("输出表有:");
-
-        for (TableInfo table : tuple3._2()) {
-            System.out.print(table);
-        }
-
-        System.out.println("临时表:");
-
-        for (TableInfo table : tuple3._3()) {
-            System.out.print(table);
-        }
+        print(tuple3._2(), tuple3._2(), tuple3._3(), false);
     }
 
+    public static void print(Result result) {
+        if (result == null) {
+            return;
+        }
+        print(result.getInputSets(), result.getOutputSets(), result.getTempSets(), result.isJoin());
+
+    }
+
+    private static void print(Set<TableInfo> inputTable, Set<TableInfo> outputTable, Set<TableInfo> tempTable, boolean join) {
+
+        LOG.info("是否包含join:" + join);
+        LOG.info("输入表有:");
+        for (TableInfo table : inputTable) {
+            LOG.info(table);
+        }
+
+        LOG.info("输出表有:");
+
+        for (TableInfo table : outputTable) {
+            LOG.info(table);
+        }
+
+        LOG.info("临时表:");
+
+        for (TableInfo table : tempTable) {
+            LOG.info(table);
+        }
+
+    }
 
 }
