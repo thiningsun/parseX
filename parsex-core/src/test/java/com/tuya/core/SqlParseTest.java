@@ -15,7 +15,7 @@ public class SqlParseTest {
             "add columns ( app_name        string comment 'app名称',\n" +
             "    app_owner       string  comment 'app拥有者')";
 
-    String sql = "select id from a left join (select id from b) on 1=1 limit 100";
+    String sql = "create database db";
     private HashSet<TableInfo> inputTables = new HashSet<>();
 
     @Test

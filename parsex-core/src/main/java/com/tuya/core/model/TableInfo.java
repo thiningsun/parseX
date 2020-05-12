@@ -35,6 +35,15 @@ public class TableInfo {
 
     private boolean selectAll;
 
+    private boolean isDb;
+
+
+    public TableInfo(String dbName, OperatorType type) {
+        this.dbName = dbName;
+        this.type = type;
+        this.isDb = true;
+    }
+
     public TableInfo(String name, String dbName, OperatorType type, HashSet<String> columns) {
         this.name = name;
         this.dbName = dbName;
@@ -81,6 +90,10 @@ public class TableInfo {
     }
 
 
+    public boolean isDb() {
+        return isDb;
+    }
+
     public OperatorType getType() {
         return type;
     }
@@ -110,9 +123,14 @@ public class TableInfo {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        this.columns.forEach(columns -> builder.append(columns).append(" "));
+        if (this.columns != null) {
+            this.columns.forEach(columns -> builder.append(columns).append(" "));
+        }
+        if (this.name != null) {
+            return (isDb ? "[库]" : "[表]") + dbName + Constants.POINT + name + "[" + type.name() + "] column=[ " + builder.toString() + " ] limit=" + limit + "\n";
+        }
+        return (isDb ? "[库]" : "[表]") + dbName + "[" + type.name() + "] column=[ " + builder.toString() + " ] limit=" + limit + "\n";
 
-        return dbName + Constants.POINT + name + "[" + type.name() + "] column=[ " + builder.toString() + " ] limit=" + limit + "\n";
     }
 
     @Override
@@ -127,6 +145,9 @@ public class TableInfo {
 
     @Override
     public int hashCode() {
-        return this.dbName.hashCode() + this.name.hashCode() + this.type.hashCode();
+        if (this.name != null) {
+            return this.dbName.hashCode() + this.name.hashCode() + this.type.hashCode();
+        }
+        return this.dbName.hashCode() + this.type.hashCode();
     }
 }

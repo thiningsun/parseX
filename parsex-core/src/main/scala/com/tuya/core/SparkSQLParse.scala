@@ -3,12 +3,10 @@ package com.tuya.core
 import java.util.{HashSet => JSet}
 
 import com.tuya.core.enums.OperatorType
-import com.tuya.core.exceptions.SqlParseException
 import com.tuya.core.model.TableInfo
 import org.apache.spark.sql.catalyst.TableIdentifier
-import org.apache.spark.sql.catalyst.analysis.{MultiAlias, UnresolvedAlias, UnresolvedAttribute, UnresolvedFunction, UnresolvedRelation, UnresolvedStar}
+import org.apache.spark.sql.catalyst.analysis.UnresolvedRelation
 import org.apache.spark.sql.catalyst.catalog.UnresolvedCatalogRelation
-import org.apache.spark.sql.catalyst.expressions.{Alias, CaseWhen, Cast, Divide, EqualTo, Expression, In, Literal, WindowExpression}
 import org.apache.spark.sql.catalyst.plans.logical._
 import org.apache.spark.sql.execution.SparkSqlParser
 import org.apache.spark.sql.execution.command._
@@ -29,51 +27,51 @@ class SparkSQLParse extends AbstractSqlParse {
   }
 
 
- /* def getColumnAuto(exps: Expression*): String = {
-    getColumn(exps)
-  }
+  /* def getColumnAuto(exps: Expression*): String = {
+     getColumn(exps)
+   }
 
-  def getColumn(expSeq: Seq[Expression]): String = {
-    val columns = new StringBuilder
-    expSeq.foreach(exp => {
-      columns.append(resolveExp(exp)).append(",")
-    })
-    columns.toString()
-  }
+   def getColumn(expSeq: Seq[Expression]): String = {
+     val columns = new StringBuilder
+     expSeq.foreach(exp => {
+       columns.append(resolveExp(exp)).append(",")
+     })
+     columns.toString()
+   }
 
-  private[this] def resolveExp(exp: Expression): String = {
-    val column = ""
-    exp match {
-      case alias: Alias =>
-        return resolveExp(alias.child)
-      case divide: Divide =>
-        return getColumnAuto(divide.left, divide.right)
-      case cast: Cast =>
-        return resolveExp(cast.child)
-      case unresolvedFun: UnresolvedFunction =>
-        return getColumn(unresolvedFun.children)
-      case unresolvedAttribute: UnresolvedAttribute =>
-        return unresolvedAttribute.name
-      case literal: Literal =>
-        print(literal.sql)
-      case caseWhen: CaseWhen =>
-        return getColumn(caseWhen.children)
-      case in: In =>
-        return getColumn(in.children)
-      case equalTo: EqualTo =>
-        return getColumnAuto(equalTo.left, equalTo.right)
-      case unresolvedAlias: UnresolvedAlias =>
-        return getColumnAuto(unresolvedAlias.child)
-      case unresolvedStar: UnresolvedStar =>
-        return unresolvedStar.toString()
-      case multiAlias: MultiAlias =>
-        return resolveExp(multiAlias.child)
+   private[this] def resolveExp(exp: Expression): String = {
+     val column = ""
+     exp match {
+       case alias: Alias =>
+         return resolveExp(alias.child)
+       case divide: Divide =>
+         return getColumnAuto(divide.left, divide.right)
+       case cast: Cast =>
+         return resolveExp(cast.child)
+       case unresolvedFun: UnresolvedFunction =>
+         return getColumn(unresolvedFun.children)
+       case unresolvedAttribute: UnresolvedAttribute =>
+         return unresolvedAttribute.name
+       case literal: Literal =>
+         print(literal.sql)
+       case caseWhen: CaseWhen =>
+         return getColumn(caseWhen.children)
+       case in: In =>
+         return getColumn(in.children)
+       case equalTo: EqualTo =>
+         return getColumnAuto(equalTo.left, equalTo.right)
+       case unresolvedAlias: UnresolvedAlias =>
+         return getColumnAuto(unresolvedAlias.child)
+       case unresolvedStar: UnresolvedStar =>
+         return unresolvedStar.toString()
+       case multiAlias: MultiAlias =>
+         return resolveExp(multiAlias.child)
 
-      case _ =>
-        throw new SqlParseException("无法识别的exp:" + exp.getClass.getName)
-    }
-    column
-  }*/
+       case _ =>
+         throw new SqlParseException("无法识别的exp:" + exp.getClass.getName)
+     }
+     column
+   }*/
 
 
   private[this] def resolveLogic(plan: LogicalPlan, inputTables: JSet[TableInfo], outputTables: JSet[TableInfo], tmpTables: JSet[TableInfo]): Unit = {
@@ -81,12 +79,12 @@ class SparkSQLParse extends AbstractSqlParse {
 
       case plan: Project =>
         val project: Project = plan.asInstanceOf[Project]
-/*        val columnsSet = new JSet[String]()
-        project.projectList.foreach(exp => {
-          columnsSet.add(resolveExp(exp))
-        })
+        /*        val columnsSet = new JSet[String]()
+                project.projectList.foreach(exp => {
+                  columnsSet.add(resolveExp(exp))
+                })
 
-        columnsStack.push(columnsSet)*/
+                columnsStack.push(columnsSet)*/
         resolveLogic(project.child, inputTables, outputTables, tmpTables)
       case plan: Union =>
         val project: Union = plan.asInstanceOf[Union]
@@ -100,11 +98,11 @@ class SparkSQLParse extends AbstractSqlParse {
 
       case plan: Aggregate =>
         val project: Aggregate = plan.asInstanceOf[Aggregate]
-/*        val columnsSet = new JSet[String]()
-        project.aggregateExpressions.foreach(exp => {
-          columnsSet.add(resolveExp(exp))
-        })
-        columnsStack.push(columnsSet)*/
+        /*        val columnsSet = new JSet[String]()
+                project.aggregateExpressions.foreach(exp => {
+                  columnsSet.add(resolveExp(exp))
+                })
+                columnsStack.push(columnsSet)*/
         resolveLogic(project.child, inputTables, outputTables, tmpTables)
 
       case plan: Filter =>
@@ -272,6 +270,17 @@ class SparkSQLParse extends AbstractSqlParse {
         val project: GroupingSets = plan.asInstanceOf[GroupingSets]
         resolveLogic(project.child, inputTables, outputTables, tmpTables)
 
+      case plan: CreateDatabaseCommand =>
+        val project: CreateDatabaseCommand = plan.asInstanceOf[CreateDatabaseCommand]
+        inputTables.add(new TableInfo(project.databaseName, OperatorType.CREATE))
+
+      case plan: DropDatabaseCommand =>
+        val project: DropDatabaseCommand = plan.asInstanceOf[DropDatabaseCommand]
+        inputTables.add(new TableInfo(project.databaseName, OperatorType.DROP))
+
+      case plan: AlterDatabasePropertiesCommand =>
+        val project: AlterDatabasePropertiesCommand = plan.asInstanceOf[AlterDatabasePropertiesCommand]
+        inputTables.add(new TableInfo(project.databaseName, OperatorType.ALTER))
 
       case `plan` => {
         throw new RuntimeException("******child plan******:\n" + plan.getClass.getName + "\n" + plan)

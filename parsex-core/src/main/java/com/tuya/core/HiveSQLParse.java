@@ -6,7 +6,6 @@ import com.tuya.core.model.TableInfo;
 import org.apache.hadoop.hive.ql.lib.*;
 import org.apache.hadoop.hive.ql.parse.*;
 import scala.Tuple3;
-import scala.Tuple4;
 
 import java.util.*;
 
@@ -74,6 +73,22 @@ public class HiveSQLParse extends AbstractSqlParse implements NodeProcessor {
             }
             case HiveParser.TOK_SWITCHDATABASE: {
                 this.currentDb = BaseSemanticAnalyzer.unescapeIdentifier(ast.getChild(0).getText());
+                break;
+            }
+            case HiveParser.TOK_CREATEDATABASE: {
+                String dbName = BaseSemanticAnalyzer.unescapeIdentifier(ast.getChild(0).getText());
+                inputTableList.add(new TableInfo(dbName, OperatorType.CREATE));
+                break;
+            }
+            case HiveParser.TOK_DROPDATABASE: {
+                String dbName = BaseSemanticAnalyzer.unescapeIdentifier(ast.getChild(0).getText());
+                inputTableList.add(new TableInfo(dbName, OperatorType.DROP));
+                break;
+            }
+            case HiveParser.TOK_ALTERDATABASE_OWNER:
+            case HiveParser.TOK_ALTERDATABASE_PROPERTIES: {
+                String dbName = BaseSemanticAnalyzer.unescapeIdentifier(ast.getChild(0).getText());
+                inputTableList.add(new TableInfo(dbName, OperatorType.ALTER));
                 break;
             }
             default: {
