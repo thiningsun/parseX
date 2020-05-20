@@ -122,16 +122,24 @@ public class TableInfo {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        if (this.columns != null) {
-            this.columns.forEach(columns -> builder.append(columns).append(" "));
+        StringBuilder str = new StringBuilder();
+        if (isDb) {
+            str.append("[库]").append(dbName).append("[").append(type.name()).append("]");
+        } else {
+            str.append("[表]").append(dbName).append(Constants.POINT).append(name).append("[").append(type.name()).append("]");
         }
-        if (this.name != null) {
-            return (isDb ? "[库]" : "[表]") + dbName + Constants.POINT + name + "[" + type.name() + "] column=[ " + builder.toString() + " ] limit=" + limit + "\n";
-        }
-        return (isDb ? "[库]" : "[表]") + dbName + "[" + type.name() + "] column=[ " + builder.toString() + " ] limit=" + limit + "\n";
 
+        if (this.columns != null && this.columns.size() > 0) {
+            str.append(" column[ ");
+            this.columns.forEach(columns -> str.append(columns).append(" "));
+            str.append("]");
+        }
+        if (limit != null) {
+            str.append(" limit[ ").append(limit).append(" ]");
+        }
+        return str.toString();
     }
+
 
     @Override
     public boolean equals(Object obj) {

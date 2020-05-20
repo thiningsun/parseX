@@ -15,7 +15,7 @@ public class SqlParseTest {
             "add columns ( app_name        string comment 'app名称',\n" +
             "    app_owner       string  comment 'app拥有者')";
 
-    String sql = "create database db";
+    String sql = "select * from table.a";
     private HashSet<TableInfo> inputTables = new HashSet<>();
 
     @Test
