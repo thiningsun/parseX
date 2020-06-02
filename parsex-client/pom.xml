@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.tuya.bigdata</groupId>
             <artifactId>xyuan-client</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
