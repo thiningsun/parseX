@@ -5,12 +5,12 @@
     <parent>
         <artifactId>parsex</artifactId>
         <groupId>com.tuya.bigdata</groupId>
-        <version>0.0.1</version>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parsex-client</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <name>parsex-client</name>
 
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>com.tuya.bigdata</groupId>
             <artifactId>parsex-core</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
