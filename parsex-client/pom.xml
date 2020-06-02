@@ -5,7 +5,7 @@
     <parent>
         <artifactId>parsex</artifactId>
         <groupId>com.tuya.bigdata</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,13 @@
 
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.datanucleus/javax.jdo -->
+
+        <dependency>
+            <groupId>com.tuya.bigdata</groupId>
+            <artifactId>xyuan-client</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>javax.jdo</artifactId>
@@ -70,7 +76,7 @@
         <dependency>
             <groupId>com.tuya.bigdata</groupId>
             <artifactId>parsex-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
 
     </dependencies>
