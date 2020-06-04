@@ -38,6 +38,9 @@ public class TableInfo {
     private boolean isDb;
 
 
+    public TableInfo(){}
+
+
     public TableInfo(String dbName, OperatorType type) {
         this.dbName = dbName;
         this.type = type;
