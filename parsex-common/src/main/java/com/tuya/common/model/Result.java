@@ -29,7 +29,7 @@ public class Result {
      */
     private boolean join;
 
-
+    public Result(){}
 
     public Result(Set<TableInfo> inputSets, Set<TableInfo> outputSets, Set<TableInfo> tempSets) {
         this(inputSets, outputSets, tempSets, false);
