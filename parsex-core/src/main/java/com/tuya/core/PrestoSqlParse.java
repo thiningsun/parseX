@@ -4,9 +4,10 @@ import com.facebook.presto.sql.parser.ParsingException;
 import com.facebook.presto.sql.parser.ParsingOptions;
 import com.facebook.presto.sql.parser.SqlParser;
 import com.facebook.presto.sql.tree.*;
-import com.tuya.core.enums.OperatorType;
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.TableInfo;
+import com.tuya.common.Constants;
+import com.tuya.common.enums.OperatorType;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.TableInfo;
 import org.apache.log4j.Logger;
 import scala.Tuple3;
 

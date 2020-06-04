@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.presto.sql.parser.ParsingException;
 import com.tuya.core.PrestoSqlParse;
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.Result;
-import com.tuya.core.util.SqlParseUtil;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.Result;
+import com.tuya.core.SqlParseUtil;
 import org.apache.http.message.BasicHeader;
 import org.junit.Test;
 

@@ -2,9 +2,9 @@ package org.apache.spark.sql.catalyst.expressions;
 
 import com.tuya.core.SparkSQLParse;
 import com.tuya.core.SqlParse;
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.Result;
-import com.tuya.core.util.SqlParseUtil;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.Result;
+import com.tuya.core.SqlParseUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;

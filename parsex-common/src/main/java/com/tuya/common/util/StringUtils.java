@@ -1,8 +1,7 @@
-package com.tuya.core.util;
+package com.tuya.common.util;
 
 
-import com.tuya.core.Constants;
-import org.apache.commons.lang3.tuple.Pair;
+import com.tuya.common.Constants;
 
 /**
  * desc:

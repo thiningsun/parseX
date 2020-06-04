@@ -6,6 +6,7 @@
     <modules>
         <module>parsex-client</module>
         <module>parsex-core</module>
+        <module>parsex-common</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

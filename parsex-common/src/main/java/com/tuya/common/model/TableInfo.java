@@ -1,9 +1,9 @@
-package com.tuya.core.model;
+package com.tuya.common.model;
 
-import com.tuya.core.Constants;
-import com.tuya.core.enums.OperatorType;
-import com.tuya.core.util.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.tuya.common.Constants;
+import com.tuya.common.enums.OperatorType;
+import com.tuya.common.util.Pair;
+import com.tuya.common.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;

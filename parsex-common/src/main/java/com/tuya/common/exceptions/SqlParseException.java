@@ -1,4 +1,4 @@
-package com.tuya.core.exceptions;
+package com.tuya.common.exceptions;
 
 /**
  * desc:

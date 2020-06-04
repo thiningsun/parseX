@@ -1,11 +1,8 @@
 package com.tuya.core;
 
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.Result;
-import com.tuya.core.model.TableInfo;
-import scala.Tuple3;
-
-import java.util.HashSet;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.Result;
+import com.tuya.common.model.TableInfo;
 
 /**
  * desc:

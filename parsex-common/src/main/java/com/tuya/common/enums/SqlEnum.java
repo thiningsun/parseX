@@ -1,4 +1,4 @@
-package com.tuya.core.enums;
+package com.tuya.common.enums;
 
 public enum SqlEnum {
 

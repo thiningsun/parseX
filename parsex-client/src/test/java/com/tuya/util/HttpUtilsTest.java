@@ -9,10 +9,10 @@ import com.tuya.common.enums.OperatorEnum;
 import com.tuya.common.enums.SqlTypeEnums;
 import com.tuya.core.HiveSQLParse;
 import com.tuya.core.SparkSQLParse;
-import com.tuya.core.enums.OperatorType;
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.Result;
-import com.tuya.core.model.TableInfo;
+import com.tuya.common.enums.OperatorType;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.Result;
+import com.tuya.common.model.TableInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.junit.Test;
@@ -29,47 +29,7 @@ public class HttpUtilsTest {
      * hiveJobId
      */
     String hiveJobId = "";
-    String line = "表bi_ods.ods_fuxi_service_order[READ]\n" +
-            "表ipc_dep.day_pid_online[READ]\n" +
-            "表bi_dw.dws_device_dp_report_num_1d[READ]\n" +
-            "表ipc_dep.cloud_storage_device[READ]\n" +
-            "表ipc_dep.value_added_atop_media_count[READ]\n" +
-            "表ipc_dep.tmp_alarm_is_open_device[READ]\n" +
-            "表ipc_dep.value_added_atop_token_count[READ]\n" +
-            "表bi_ods_clear.ods_clear_gateway_onoffline[READ]\n" +
-            "表bi_dw.dwd_device_item[READ]\n" +
-            "表bi_ods_clear.ods_clear_smart_request[READ]\n" +
-            "表ipc_dep.day_pid_active[READ]\n" +
-            "表ipc_dep.value_added_onoffline_device[READ]\n" +
-            "表ipc_dep.mouth_pid_online_active_count[READ]\n" +
-            "表bi_ods.ods_smart_datapoint[READ]\n" +
-            "表bi_ods.ods_smart_ipc[READ]\n" +
-            "表ipc_dep.day_pid_active[WRITE]\n" +
-            "表ipc_dep.day_pid_online_percent[WRITE]\n" +
-            "表ipc_dep.mouth_pid_online_active_add[CREATE]\n" +
-            "表ipc_dep.tmp_alarm_is_open_device[CREATE]\n" +
-            "表ipc_dep.day_pid_alarm_num[WRITE]\n" +
-            "表ipc_dep.day_pid_active[CREATE]\n" +
-            "表ipc_dep.added_value_data[WRITE]\n" +
-            "表ipc_dep.added_value_data[CREATE]\n" +
-            "表ipc_dep.value_added_atop_media_count[WRITE]\n" +
-            "表ipc_dep.value_added_onoffline_device[CREATE]\n" +
-            "表ipc_dep.cloud_storage_device[CREATE]\n" +
-            "表ipc_dep.tmp_alarm_is_open_device[WRITE]\n" +
-            "表ipc_dep.day_pid_alarm_num[CREATE]\n" +
-            "表ipc_dep.value_added_atop_media_count[CREATE]\n" +
-            "表ipc_dep.value_added_atop_token_count[CREATE]\n" +
-            "表ipc_dep.cloud_storage_device[WRITE]\n" +
-            "表ipc_dep.value_added_atop_token_count[WRITE]\n" +
-            "表ipc_dep.value_added_onoffline_device[WRITE]\n" +
-            "表ipc_dep.mouth_pid_online_active_add[WRITE]\n" +
-            "表ipc_dep.day_pid_online[WRITE]\n" +
-            "表ipc_dep.day_pid_online[CREATE]\n" +
-            "表ipc_dep.day_pid_online_percent[CREATE]\n" +
-            "表ipc_dep.mouth_pid_online_active_count[CREATE]\n" +
-            "表ipc_dep.mouth_pid_online_active_count[WRITE]\n" +
-            "表ipc_dep.datapoint_is_open_device[CREATE]\n" +
-            "表ipc_dep.datapoint_is_open_device[WRITE]";
+    String line = "";
 
     {
         headers.add(new BasicHeader("cookie",
@@ -172,6 +132,13 @@ public class HttpUtilsTest {
             }
         }
         System.out.println("all check finish");
+    }
+
+    public void checkSql() {
+        AuthResponse response = SqlAuthCheckUtils.checkByEmail("zhouzn@tuya.com", "", SqlTypeEnums.SPARK);
+
+        System.out.println(response);
+
     }
 
     @Test

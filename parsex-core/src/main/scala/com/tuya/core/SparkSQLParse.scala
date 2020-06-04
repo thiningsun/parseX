@@ -2,8 +2,8 @@ package com.tuya.core
 
 import java.util.{HashSet => JSet}
 
-import com.tuya.core.enums.OperatorType
-import com.tuya.core.model.TableInfo
+import com.tuya.common.enums.OperatorType
+import com.tuya.common.model.TableInfo
 import org.apache.spark.sql.catalyst.TableIdentifier
 import org.apache.spark.sql.catalyst.analysis.UnresolvedRelation
 import org.apache.spark.sql.catalyst.catalog.UnresolvedCatalogRelation

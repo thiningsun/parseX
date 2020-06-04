@@ -1,11 +1,12 @@
 package com.tuya.core;
 
-import com.tuya.core.enums.OperatorType;
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.Result;
-import com.tuya.core.model.TableInfo;
-import com.tuya.core.util.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.tuya.common.Constants;
+import com.tuya.common.enums.OperatorType;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.Result;
+import com.tuya.common.model.TableInfo;
+import com.tuya.common.util.Pair;
+import com.tuya.common.util.StringUtils;
 import org.apache.log4j.Logger;
 import scala.Tuple3;
 

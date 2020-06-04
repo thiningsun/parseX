@@ -1,13 +1,10 @@
-package com.tuya.core.util;
+package com.tuya.core;
 
-import com.tuya.core.HiveSQLParse;
-import com.tuya.core.PrestoSqlParse;
 import com.tuya.core.SparkSQLParse;
-import com.tuya.core.SqlParse;
-import com.tuya.core.enums.SqlEnum;
-import com.tuya.core.exceptions.SqlParseException;
-import com.tuya.core.model.Result;
-import com.tuya.core.model.TableInfo;
+import com.tuya.common.enums.SqlEnum;
+import com.tuya.common.exceptions.SqlParseException;
+import com.tuya.common.model.Result;
+import com.tuya.common.model.TableInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import scala.Tuple3;

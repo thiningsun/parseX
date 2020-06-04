@@ -19,6 +19,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.tuya.bigdata</groupId>
+            <artifactId>parsex-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.facebook.presto</groupId>
             <artifactId>presto-parser</artifactId>
         </dependency>

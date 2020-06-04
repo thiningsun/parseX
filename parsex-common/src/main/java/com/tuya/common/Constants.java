@@ -1,4 +1,4 @@
-package com.tuya.core;
+package com.tuya.common;
 
 /**
  * desc:

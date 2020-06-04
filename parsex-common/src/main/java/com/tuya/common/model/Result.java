@@ -1,4 +1,4 @@
-package com.tuya.core.model;
+package com.tuya.common.model;
 
 import java.util.Set;
 
