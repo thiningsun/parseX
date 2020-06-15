@@ -288,7 +288,7 @@ class SparkSQLParse extends AbstractSqlParse {
 
       case plan: RefreshTable =>
         val project: RefreshTable = plan.asInstanceOf[RefreshTable]
-        outputTables.add(buildTableInfo(project.tableIdent.table, project.tableIdent.database.getOrElse(this.currentDb), OperatorType.READ))
+        inputTables.add(buildTableInfo(project.tableIdent.table, project.tableIdent.database.getOrElse(this.currentDb), OperatorType.READ))
 
       case `plan` => {
         throw new RuntimeException("******child plan******:\n" + plan.getClass.getName + "\n" + plan)
