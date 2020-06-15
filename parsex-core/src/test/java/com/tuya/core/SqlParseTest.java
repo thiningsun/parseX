@@ -15,53 +15,7 @@ public class SqlParseTest {
             "add columns ( app_name        string comment 'app名称',\n" +
             "    app_owner       string  comment 'app拥有者')";
 
-    String sql = "use tuya_algorithm;\n" +
-            "\n" +
-            "drop table if exists TEMP_MID_USER_IDENTITY_MAPPING_D_03;\n" +
-            "create table TEMP_MID_USER_IDENTITY_MAPPING_D_03 stored as parquet tblproperties('parquet.compression'='SNAPPY') as\n" +
-            "select\n" +
-            "      uid\n" +
-            "      ,email\n" +
-            "      ,split(email,'@')[1] as postfix\n" +
-            "from (\n" +
-            "      select\n" +
-            "            uid\n" +
-            "            ,lower(email) as email\n" +
-            "      from (\n" +
-            "           select uid,username as email from TEMP_MID_USER_IDENTITY_MAPPING_D_02\n" +
-            "           union all\n" +
-            "           select uid,email from TEMP_MID_USER_IDENTITY_MAPPING_D_02\n" +
-            "           union all\n" +
-            "           select uid,email from bi_ods.ods_smart_developer_user_detail where dt='20200601'\n" +
-            "           union all\n" +
-            "           select uid,subscribe_emails as email from bi_ods.ods_smart_developer_user_detail where dt='20200601' \n" +
-            "           union all\n" +
-            "           select uid,email from bi_dw.dim_user_b2b_item where dt='20200601' \n" +
-            "           union all \n" +
-            "           select\n" +
-            "                  T1.uid,T2.email\n" +
-            "           from (select\n" +
-            "                       uid\n" +
-            "                 from bi_ods.ods_savanna_user \n" +
-            "                 where dt='20200601' \n" +
-            "                 and platform=1 \n" +
-            "                 and biz=1 \n" +
-            "                 and status=1 \n" +
-            "                 and env=1  \n" +
-            "               ) T1 \n" +
-            "           left join (select \n" +
-            "           \t              uid\n" +
-            "           \t              ,email \n" +
-            "           \t       from bi_dw.dim_user_bside_item \n" +
-            "           \t       where dt='20200601' \n" +
-            "           \t       ) T2\n" +
-            "          on T1.uid=T2.uid\n" +
-            "           ) P \n" +
-            "      where email is not null\n" +
-            "      and email like '%@%'\n" +
-            "      group by uid,email\n" +
-            "      ) PT\n" +
-            ";";
+    String sql = "refresh table bi_ods.test";
     private HashSet<TableInfo> inputTables = new HashSet<>();
 
     @Test

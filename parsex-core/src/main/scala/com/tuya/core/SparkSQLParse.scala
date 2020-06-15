@@ -10,7 +10,7 @@ import org.apache.spark.sql.catalyst.catalog.UnresolvedCatalogRelation
 import org.apache.spark.sql.catalyst.plans.logical._
 import org.apache.spark.sql.execution.SparkSqlParser
 import org.apache.spark.sql.execution.command._
-import org.apache.spark.sql.execution.datasources.CreateTable
+import org.apache.spark.sql.execution.datasources.{CreateTable, RefreshTable}
 import org.apache.spark.sql.internal.SQLConf
 
 import scala.collection.JavaConversions._
@@ -286,6 +286,9 @@ class SparkSQLParse extends AbstractSqlParse {
         val project: ShowCreateTableCommand = plan.asInstanceOf[ShowCreateTableCommand]
         outputTables.add(buildTableInfo(project.table.table, project.table.database.getOrElse(this.currentDb), OperatorType.READ))
 
+      case plan: RefreshTable =>
+        val project: RefreshTable = plan.asInstanceOf[RefreshTable]
+        outputTables.add(buildTableInfo(project.tableIdent.table, project.tableIdent.database.getOrElse(this.currentDb), OperatorType.READ))
 
       case `plan` => {
         throw new RuntimeException("******child plan******:\n" + plan.getClass.getName + "\n" + plan)
