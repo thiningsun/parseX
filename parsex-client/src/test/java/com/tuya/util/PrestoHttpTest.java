@@ -32,7 +32,7 @@ public class PrestoHttpTest {
     @Test
     public void get() throws SqlParseException {
 
-        String s = HttpUtils.doGet("https://prestonew-presto.bigdata-cn.tuya-inc.top:7799/v1/query", headers);
+        String s = HttpUtils.doGet("https://prestonew-presto.bigdata-cn.xx-inc.top:7799/v1/query", headers);
 
         JSONArray array = JSONArray.parseArray(s);
 

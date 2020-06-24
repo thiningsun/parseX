@@ -15,7 +15,7 @@ public class SqlParseTest {
             "add columns ( app_name        string comment 'app名称',\n" +
             "    app_owner       string  comment 'app拥有者')";
 
-    String sql = "refresh table bi_ods.test";
+    String sql = "";
     private HashSet<TableInfo> inputTables = new HashSet<>();
 
     @Test

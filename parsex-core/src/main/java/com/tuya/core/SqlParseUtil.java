@@ -1,6 +1,5 @@
 package com.tuya.core;
 
-import com.tuya.core.SparkSQLParse;
 import com.tuya.common.enums.SqlEnum;
 import com.tuya.common.exceptions.SqlParseException;
 import com.tuya.common.model.Result;
